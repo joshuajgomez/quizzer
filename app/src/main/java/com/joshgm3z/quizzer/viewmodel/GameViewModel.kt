@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.joshgm3z.quizzer.model.GameRepository
 import com.joshgm3z.quizzer.model.GameResult
 import com.joshgm3z.quizzer.model.GameState
+import com.joshgm3z.quizzer.utils.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +25,7 @@ class GameViewModel @Inject constructor() : ViewModel() {
     private val _gameUiState = MutableStateFlow<GameUiState>(GameUiState.Ready)
     val gameUiState = _gameUiState.asStateFlow()
 
-    lateinit var gameState: GameState
+    private lateinit var gameState: GameState
 
     fun onStartClick() {
         gameState = gameRepository.fetchQuestions()
@@ -32,13 +33,25 @@ class GameViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onAnswerClick(answer: String) {
+        Logger.info("answer = [${answer}]")
+        Logger.info("gameState = [${gameState}]")
         if (gameState.game().question.answer == answer) {
             // correct answer
             gameState.game().isAnswered = true
+            gameState.score++
         } else {
             // incorrect
         }
-        gameState.itemIndex++
-        _gameUiState.value = GameUiState.NextQuestion(gameState)
+        if (gameState.attempts >= gameState.maxScore) {
+            // game over
+            _gameUiState.value = GameUiState.GameOver(
+                GameResult.createFrom(gameState)
+            )
+        } else {
+            // next question
+            gameState.itemIndex++
+            gameState.attempts++
+            _gameUiState.value = GameUiState.NextQuestion(gameState)
+        }
     }
 }

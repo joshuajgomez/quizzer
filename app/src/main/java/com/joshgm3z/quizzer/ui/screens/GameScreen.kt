@@ -1,25 +1,44 @@
 package com.joshgm3z.quizzer.ui.screens
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.joshgm3z.quizzer.model.GameItem
 import com.joshgm3z.quizzer.model.GameResult
 import com.joshgm3z.quizzer.model.GameState
+import com.joshgm3z.quizzer.ui.theme.Green40
 import com.joshgm3z.quizzer.ui.theme.QuizzerTheme
+import com.joshgm3z.quizzer.utils.Logger
 import com.joshgm3z.quizzer.viewmodel.GameUiState
 import com.joshgm3z.quizzer.viewmodel.GameViewModel
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun PreviewGameScreenReady() {
     QuizzerTheme {
@@ -27,7 +46,7 @@ fun PreviewGameScreenReady() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun PreviewGameScreenOver() {
     QuizzerTheme {
@@ -35,7 +54,7 @@ fun PreviewGameScreenOver() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun PreviewGameScreenNext() {
     QuizzerTheme {
@@ -44,11 +63,16 @@ fun PreviewGameScreenNext() {
 }
 
 @Composable
-fun GameScreenContainer() {
-    val gameViewModel: GameViewModel = hiltViewModel()
+fun GameScreenContainer(
+    gameViewModel: GameViewModel = hiltViewModel()
+) {
     val gameUiState = gameViewModel.gameUiState.collectAsState()
-    GameScreen(gameUiState.value,
-        onStartClick = { gameViewModel.onStartClick() })
+    Logger.info("game ui state update")
+    GameScreen(
+        gameUiState = gameUiState.value,
+        onStartClick = { gameViewModel.onStartClick() },
+        onAnswerClick = { gameViewModel.onAnswerClick(it) }
+    )
 }
 
 @Composable
@@ -84,9 +108,20 @@ fun QuestionScreen(
     gameState: GameState,
     onAnswerClick: (answer: String) -> Unit
 ) {
-    Column {
-        Text(text = gameState.game().question.question)
-        LazyHorizontalGrid(rows = GridCells.Adaptive(50.dp)) {
+    Logger.info("gameState = [${gameState}]")
+    Column(
+        Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Text(
+            text = gameState.game().question.question,
+            fontSize = 25.sp,
+            textAlign = TextAlign.Center
+        )
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(100.dp),
+        ) {
             items(gameState.gameItems) {
                 AnswerChip(it) {
                     onAnswerClick(it.question.answer)
@@ -98,8 +133,36 @@ fun QuestionScreen(
 
 @Composable
 fun AnswerChip(gameItem: GameItem, onClick: () -> Unit) {
-    TextButton(onClick = onClick) {
-        Text(text = gameItem.question.answer)
+    Logger.info("gameItem = [${gameItem}]")
+    val isSelected = gameItem.isAnswered
+    Row(
+        modifier = Modifier
+            .padding(10.dp)
+            .background(
+                color =
+                if (isSelected) Green40
+                else colorScheme.surface,
+                shape = RoundedCornerShape(20.dp)
+            )
+            .border(
+                shape = RoundedCornerShape(20.dp),
+                border = BorderStroke(1.dp, colorScheme.primary)
+            )
+            .padding(horizontal = 10.dp, vertical = 5.dp)
+            .clickable { onClick() },
+    ) {
+        if (isSelected)
+            Icon(
+                Icons.Default.Check, null,
+                modifier = Modifier.padding(end = 5.dp),
+                tint = Color.White
+            )
+        Text(
+            text = gameItem.question.answer,
+            color =
+            if (isSelected) Color.White
+            else colorScheme.primary
+        )
     }
 }
 

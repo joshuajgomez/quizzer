@@ -1,7 +1,8 @@
 package com.joshgm3z.quizzer.model
 
 class GameState(
-    val score: Int,
+    var score: Int,
+    var attempts: Int,
     val maxScore: Int,
     var timeStarted: Long,
     var itemIndex: Int = 0,
@@ -9,18 +10,36 @@ class GameState(
 ) {
     fun game() = gameItems[itemIndex]
 
+    override fun toString(): String {
+        return "GameState(" +
+                "score=$score, " +
+                "attempts=$attempts, " +
+                "maxScore=$maxScore, " +
+                "timeStarted=$timeStarted, " +
+                "itemIndex=$itemIndex)"
+    }
+
     companion object {
         fun preview(): GameState {
             val time = System.currentTimeMillis()
+            val gameItems = arrayListOf<GameItem>()
+            questions.forEach {
+                gameItems.add(GameItem(it))
+            }
+            gameItems[2].isAnswered = true
+            gameItems[3].isAnswered = true
             return GameState(
                 score = 2,
                 maxScore = 5,
+                attempts = 0,
                 timeStarted = time - 10000,
-                gameItems = listOf(
-                    GameItem(questions[0]),
-                )
+                gameItems = gameItems
             )
         }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return false
     }
 }
 
@@ -38,6 +57,15 @@ data class GameResult(
                 maxScore = 5,
                 timeStarted = time - 10000,
                 timeFinished = time,
+            )
+        }
+
+        fun createFrom(gameState: GameState): GameResult {
+            return GameResult(
+                score = gameState.score,
+                maxScore = gameState.maxScore,
+                timeStarted = gameState.timeStarted,
+                timeFinished = System.currentTimeMillis()
             )
         }
     }

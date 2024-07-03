@@ -12,7 +12,8 @@ class GameRepository @Inject constructor() {
             score = 0,
             maxScore = 5,
             timeStarted = System.currentTimeMillis(),
-            gameItems = gameItems
+            gameItems = gameItems,
+            attempts = 0
         )
     }
 
