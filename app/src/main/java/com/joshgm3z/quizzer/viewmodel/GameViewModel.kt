@@ -1,13 +1,17 @@
 package com.joshgm3z.quizzer.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.joshgm3z.quizzer.model.GameRepository
 import com.joshgm3z.quizzer.model.GameResult
 import com.joshgm3z.quizzer.model.GameState
 import com.joshgm3z.quizzer.utils.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import java.util.logging.Handler
 import javax.inject.Inject
 
 sealed class GameUiState {
@@ -42,16 +46,22 @@ class GameViewModel @Inject constructor() : ViewModel() {
         } else {
             // incorrect
         }
-        if (gameState.attempts >= gameState.maxScore) {
-            // game over
-            _gameUiState.value = GameUiState.GameOver(
-                GameResult.createFrom(gameState)
-            )
-        } else {
+
+        if (gameState.itemIndex < gameState.maxScore) {
             // next question
             gameState.itemIndex++
-            gameState.attempts++
-            _gameUiState.value = GameUiState.NextQuestion(gameState)
+        }
+        gameState.attempts++
+        _gameUiState.value = GameUiState.NextQuestion(gameState)
+        Logger.debug("gameState = [$gameState]")
+        if (gameState.attempts == gameState.maxScore - 1) {
+            // game over
+            viewModelScope.launch {
+                delay(1000)
+                _gameUiState.value = GameUiState.GameOver(
+                    GameResult.createFrom(gameState)
+                )
+            }
         }
     }
 }

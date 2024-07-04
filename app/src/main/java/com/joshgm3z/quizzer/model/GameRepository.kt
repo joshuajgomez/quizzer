@@ -10,7 +10,6 @@ class GameRepository @Inject constructor() {
         }
         return GameState(
             score = 0,
-            maxScore = 5,
             timeStarted = System.currentTimeMillis(),
             gameItems = gameItems,
             attempts = 0

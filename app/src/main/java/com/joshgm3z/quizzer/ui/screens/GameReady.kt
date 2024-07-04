@@ -6,54 +6,46 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.joshgm3z.quizzer.model.GameResult
 import com.joshgm3z.quizzer.ui.theme.QuizzerTheme
 
 @Preview
 @Composable
-fun PreviewGameOverScreen() {
+fun PreviewGameReady() {
     QuizzerTheme {
-        GameOverScreen(GameResult.new())
+        GameReady()
     }
 }
 
 @Composable
-fun GameOverScreen(
-    gameResult: GameResult,
-    onStartGameClick: () -> Unit = {}
-) {
+fun GameReady(onStartClick: () -> Unit = {}) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+        Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth()
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Game Over",
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "Score: ${gameResult.score}/${gameResult.maxScore}",
-            fontWeight = FontWeight.Bold,
-            fontSize = 25.sp
+            text = "Welcome to",
+            fontSize = 20.sp,
+            color = colorScheme.secondary
         )
         Text(
-            text = "Finished in ${gameResult.timeTaken()}",
-            fontWeight = FontWeight.Bold
+            text = "Quizzer",
+            fontSize = 40.sp,
+            color = colorScheme.primary
         )
         Spacer(modifier = Modifier.height(70.dp))
-        Button(onClick = { onStartGameClick() }) {
-            Text(text = "New Game")
+        Button(onClick = onStartClick) {
+            Text(text = "Start Game")
         }
     }
 }

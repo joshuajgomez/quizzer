@@ -6,7 +6,6 @@ import kotlin.time.toDuration
 class GameState(
     var score: Int,
     var attempts: Int,
-    val maxScore: Int,
     var timeStarted: Long,
     var itemIndex: Int = 0,
     val gameItems: List<GameItem>
@@ -33,13 +32,17 @@ class GameState(
             gameItems[3].isAnswered = true
             return GameState(
                 score = 2,
-                maxScore = 5,
                 attempts = 0,
-                timeStarted = time - 10000,
+                timeStarted = time - 1000,
                 gameItems = gameItems
             )
         }
+
+
     }
+
+    val maxScore: Int
+        get() = gameItems.size
 
     override fun equals(other: Any?): Boolean {
         return false
@@ -62,7 +65,7 @@ data class GameResult(
             return GameResult(
                 score = 0,
                 maxScore = 5,
-                timeStarted = time - 10000,
+                timeStarted = time - 100,
                 timeFinished = time,
             )
         }
