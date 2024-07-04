@@ -1,5 +1,6 @@
 package com.joshgm3z.quizzer.model
 
+import java.util.concurrent.TimeUnit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -56,7 +57,7 @@ data class GameResult(
     var timeFinished: Long
 ) {
     fun timeTaken(): String {
-        return (timeFinished - timeStarted).toDuration(DurationUnit.SECONDS).toString()
+        return "${TimeUnit.MILLISECONDS.toSeconds(timeFinished - timeStarted)} seconds"
     }
 
     companion object {

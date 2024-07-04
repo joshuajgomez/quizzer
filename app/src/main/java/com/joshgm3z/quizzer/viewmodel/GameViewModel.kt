@@ -49,11 +49,11 @@ class GameViewModel @Inject constructor() : ViewModel() {
             // incorrect
         }
 
-        Logger.debug("gameState = [$gameState]")
         if (gameState.attempts == gameState.maxScore) {
             // game over
             viewModelScope.launch {
                 val gameResult = GameResult.createFrom(gameState)
+                Logger.debug("gameResult = [$gameResult]")
                 delay(2.seconds)
                 _gameUiState.value = GameUiState.GameOver(gameResult)
             }

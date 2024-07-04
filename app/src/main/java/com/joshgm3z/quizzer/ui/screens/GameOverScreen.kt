@@ -16,6 +16,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joshgm3z.quizzer.model.GameResult
 import com.joshgm3z.quizzer.ui.theme.QuizzerTheme
+import java.util.concurrent.TimeUnit
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @Preview
 @Composable
@@ -43,12 +46,10 @@ fun GameOverScreen(
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = "Score: ${gameResult.score}/${gameResult.maxScore}",
-            fontWeight = FontWeight.Bold,
             fontSize = 25.sp
         )
         Text(
             text = "Finished in ${gameResult.timeTaken()}",
-            fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(70.dp))
         Button(onClick = { onStartGameClick() }) {
@@ -56,3 +57,4 @@ fun GameOverScreen(
         }
     }
 }
+
