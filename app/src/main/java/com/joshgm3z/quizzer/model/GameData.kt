@@ -60,7 +60,7 @@ data class GameResult(
     }
 
     companion object {
-        fun new(): GameResult {
+        fun preview(): GameResult {
             val time = System.currentTimeMillis()
             return GameResult(
                 score = 0,

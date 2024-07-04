@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.logging.Handler
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 sealed class GameUiState {
     data object Ready : GameUiState()
@@ -38,7 +39,8 @@ class GameViewModel @Inject constructor() : ViewModel() {
 
     fun onAnswerClick(answer: String) {
         Logger.info("answer = [${answer}]")
-        Logger.info("gameState = [${gameState}]")
+        gameState.attempts++
+
         if (gameState.game().question.answer == answer) {
             // correct answer
             gameState.game().isAnswered = true
@@ -47,21 +49,19 @@ class GameViewModel @Inject constructor() : ViewModel() {
             // incorrect
         }
 
-        if (gameState.itemIndex < gameState.maxScore) {
+        Logger.debug("gameState = [$gameState]")
+        if (gameState.attempts == gameState.maxScore) {
+            // game over
+            viewModelScope.launch {
+                val gameResult = GameResult.createFrom(gameState)
+                delay(2.seconds)
+                _gameUiState.value = GameUiState.GameOver(gameResult)
+            }
+        } else {
             // next question
             gameState.itemIndex++
         }
-        gameState.attempts++
-        _gameUiState.value = GameUiState.NextQuestion(gameState)
         Logger.debug("gameState = [$gameState]")
-        if (gameState.attempts == gameState.maxScore - 1) {
-            // game over
-            viewModelScope.launch {
-                delay(1000)
-                _gameUiState.value = GameUiState.GameOver(
-                    GameResult.createFrom(gameState)
-                )
-            }
-        }
+        _gameUiState.value = GameUiState.NextQuestion(gameState)
     }
 }
