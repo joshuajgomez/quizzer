@@ -1,5 +1,8 @@
 package com.joshgm3z.quizzer.model
 
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
+
 class GameState(
     var score: Int,
     var attempts: Int,
@@ -49,6 +52,10 @@ data class GameResult(
     var timeStarted: Long,
     var timeFinished: Long
 ) {
+    fun timeTaken(): String {
+        return (timeFinished - timeStarted).toDuration(DurationUnit.SECONDS).toString()
+    }
+
     companion object {
         fun new(): GameResult {
             val time = System.currentTimeMillis()

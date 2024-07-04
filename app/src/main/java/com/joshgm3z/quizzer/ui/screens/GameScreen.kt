@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -46,7 +48,7 @@ fun PreviewGameScreenReady() {
     }
 }
 
-@Preview(showBackground = true)
+// @Preview(showBackground = true)
 @Composable
 fun PreviewGameScreenOver() {
     QuizzerTheme {
@@ -82,7 +84,9 @@ fun GameScreen(
     onAnswerClick: (answer: String) -> Unit = {},
 ) {
     when (gameUiState) {
-        is GameUiState.GameOver -> GameOverScreen(gameUiState.gameResult)
+        is GameUiState.GameOver -> GameOverScreen(gameUiState.gameResult) {
+            onStartClick()
+        }
 
         is GameUiState.NextQuestion -> QuestionScreen(gameUiState.gameState) {
             onAnswerClick(it)
@@ -91,15 +95,6 @@ fun GameScreen(
         GameUiState.Ready -> GameReady {
             onStartClick()
         }
-    }
-}
-
-@Composable
-fun GameOverScreen(
-    gameResult: GameResult
-) {
-    Column {
-        Text(text = gameResult.toString())
     }
 }
 
@@ -119,8 +114,9 @@ fun QuestionScreen(
             fontSize = 25.sp,
             textAlign = TextAlign.Center
         )
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(100.dp),
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Fixed(3),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             items(gameState.gameItems) {
                 AnswerChip(it) {
@@ -150,11 +146,14 @@ fun AnswerChip(gameItem: GameItem, onClick: () -> Unit) {
             )
             .padding(horizontal = 10.dp, vertical = 5.dp)
             .clickable { onClick() },
+        horizontalArrangement = Arrangement.Center
     ) {
         if (isSelected)
             Icon(
                 Icons.Default.Check, null,
-                modifier = Modifier.padding(end = 5.dp),
+                modifier = Modifier
+                    .padding(end = 2.dp)
+                    .size(20.dp),
                 tint = Color.White
             )
         Text(
